@@ -1,40 +1,35 @@
 import streamlit as st
+import requests
 
-st.set_page_config(page_title="AI Blueprint Creator", layout="centered")
+st.set_page_config(page_title="Blueprint Creator", layout="centered")
 
-st.title("🧠 AI Mechanical Design Blueprint Creator")
+st.title("🧠 Mechanical Blueprint Creator (No AI)")
 
-api_key = st.text_input("Enter your OpenAI API Key", type="password")
-idea = st.text_input("Describe your design idea")
+idea = st.text_input("Enter your design idea")
 
-if api_key and idea:
-    try:
-        from openai import OpenAI
+if idea:
 
-        client = OpenAI(api_key=api_key)
+    url = "http://127.0.0.1:8000/blueprint"
 
-        prompt = f"""
-        You are a mechanical engineering assistant.
+    response = requests.get(url, params={"idea": idea})
 
-        Create a structured CAD blueprint for this idea:
-        {idea}
+    if response.status_code == 200:
+        data = response.json()
 
-        Include:
-        - Design overview
-        - Materials
-        - Structural considerations
-        - Rough dimensions
-        - CAD steps
-        """
+        st.subheader("📌 Design Overview")
+        st.write(data["design_overview"])
 
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[{"role": "user", "content": prompt}]
-        )
+        st.subheader("🧱 Materials")
+        for m in data["materials"]:
+            st.write("- " + m)
 
-        st.subheader("Blueprint Output")
-        st.write(response.choices[0].message.content)
+        st.subheader("⚙️ Considerations")
+        for c in data["considerations"]:
+            st.write("- " + c)
 
-    except Exception as e:
-        st.error("OpenAI failed to load or run.")
-        st.write(e)
+        st.subheader("🧩 CAD Steps")
+        for i, step in enumerate(data["cad_steps"], 1):
+            st.write(f"{i}. {step}")
+
+    else:
+        st.error("API not reachable")
