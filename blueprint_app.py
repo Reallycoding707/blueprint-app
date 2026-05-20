@@ -1,41 +1,40 @@
 import streamlit as st
-from openai import OpenAI
 
 st.set_page_config(page_title="AI Blueprint Creator", layout="centered")
 
 st.title("🧠 AI Mechanical Design Blueprint Creator")
-st.write("Turn your idea into a professional engineering design plan using AI")
 
-# API key input (simple version for now)
 api_key = st.text_input("Enter your OpenAI API Key", type="password")
+idea = st.text_input("Describe your design idea")
 
-idea = st.text_input("Describe your design idea (e.g., phone stand, bracket, clamp)")
+if api_key and idea:
+    try:
+        from openai import OpenAI
 
-if idea and api_key:
+        client = OpenAI(api_key=api_key)
 
-    client = OpenAI(api_key=api_key)
+        prompt = f"""
+        You are a mechanical engineering assistant.
 
-    prompt = f"""
-    You are a mechanical engineering assistant.
+        Create a structured CAD blueprint for this idea:
+        {idea}
 
-    Create a structured CAD design blueprint for this idea:
-    {idea}
+        Include:
+        - Design overview
+        - Materials
+        - Structural considerations
+        - Rough dimensions
+        - CAD steps
+        """
 
-    Include:
-    1. Design overview
-    2. Material suggestions
-    3. Structural considerations
-    4. Suggested dimensions (rough)
-    5. Step-by-step CAD instructions (SolidWorks style)
-    Keep it clear and practical for an engineering student.
-    """
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}]
+        )
 
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {"role": "user", "content": prompt}
-        ]
-    )
+        st.subheader("Blueprint Output")
+        st.write(response.choices[0].message.content)
 
-    st.subheader("📌 AI Generated Blueprint")
-    st.write(response.choices[0].message.content)
+    except Exception as e:
+        st.error("OpenAI failed to load or run.")
+        st.write(e)
