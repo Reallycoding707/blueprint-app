@@ -1,61 +1,41 @@
 import streamlit as st
+from openai import OpenAI
 
-st.set_page_config(
-    page_title="Blueprint Creator",
-    page_icon="🧠",
-    layout="centered"
-)
+st.set_page_config(page_title="AI Blueprint Creator", layout="centered")
 
-# Header
-st.markdown("<h1 style='text-align: center;'>🧠 Mechanical Design Blueprint Creator</h1>", unsafe_allow_html=True)
+st.title("🧠 AI Mechanical Design Blueprint Creator")
+st.write("Turn your idea into a professional engineering design plan using AI")
 
-st.markdown("<p style='text-align: center; color: gray;'>Turn your idea into a structured engineering design plan</p>", unsafe_allow_html=True)
+# API key input (simple version for now)
+api_key = st.text_input("Enter your OpenAI API Key", type="password")
 
-st.divider()
+idea = st.text_input("Describe your design idea (e.g., phone stand, bracket, clamp)")
 
-# Input
-idea = st.text_input("💡 Describe your design idea (e.g., phone stand, bracket, clamp)")
+if idea and api_key:
 
-# If user enters idea
-if idea:
+    client = OpenAI(api_key=api_key)
 
-    st.subheader("📌 Project Overview")
-    st.info(f"Design Idea: {idea}")
+    prompt = f"""
+    You are a mechanical engineering assistant.
 
-    col1, col2 = st.columns(2)
+    Create a structured CAD design blueprint for this idea:
+    {idea}
 
-    with col1:
-        st.subheader("⚙️ Key Considerations")
-        st.write("- Load requirements")
-        st.write("- Material selection")
-        st.write("- Stability & safety factors")
-        st.write("- Manufacturing method")
+    Include:
+    1. Design overview
+    2. Material suggestions
+    3. Structural considerations
+    4. Suggested dimensions (rough)
+    5. Step-by-step CAD instructions (SolidWorks style)
+    Keep it clear and practical for an engineering student.
+    """
 
-    with col2:
-        st.subheader("📏 Suggested Structure")
-        st.write("- Base support")
-        st.write("- Load distribution elements")
-        st.write("- Connection/joint points")
-        st.write("- Reinforcement areas")
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "user", "content": prompt}
+        ]
+    )
 
-    st.divider()
-
-    st.subheader("🧩 CAD Modeling Steps (SOLIDWORKS)")
-    steps = [
-        "Create base sketch",
-        "Extrude main structure",
-        "Add support features",
-        "Refine edges (fillets/chamfers)",
-        "Assemble components if needed"
-    ]
-
-    for i, step in enumerate(steps, 1):
-        st.write(f"{i}. {step}")
-
-    st.divider()
-
-    st.success("✔ Recommended Next Step: Start by sketching the base and defining key dimensions in CAD.")
-
-# Footer
-st.markdown("---")
-st.markdown("<p style='text-align: center; font-size: 12px; color: gray;'>Built by a Mechanical Engineering student • SOLIDWORKS + Python</p>", unsafe_allow_html=True)
+    st.subheader("📌 AI Generated Blueprint")
+    st.write(response.choices[0].message.content)
