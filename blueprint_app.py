@@ -9,7 +9,7 @@ idea = st.text_input("Enter your design idea")
 
 if idea:
 
-    url = "http://127.0.0.1:8000/blueprint"
+    url = "url = "https://your-api-url.onrender.com/blueprint"
 
     response = requests.get(url, params={"idea": idea})
 
