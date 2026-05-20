@@ -7,7 +7,7 @@ st.title("🧠 Mechanical Blueprint Creator")
 
 idea = st.text_input("Enter your design idea")
 
-API_URL = "https://your-api.onrender.com/blueprint"  # replace later
+API_URL = "https://blueprint-app-1-3hcj.onrender.com/blueprint"  # replace later
 
 if idea:
     response = requests.get(API_URL, params={"idea": idea})
