@@ -4,30 +4,29 @@ app = FastAPI()
 
 @app.get("/")
 def home():
-    return {"status": "Blueprint API running"}
+    return {"status": "API running"}
 
 @app.get("/blueprint")
 def blueprint(idea: str):
 
     return {
         "idea": idea,
-        "design_overview": f"Design plan for {idea}",
+        "design_overview": f"Blueprint for {idea}",
         "materials": [
             "ABS plastic",
             "Aluminum",
-            "Steel (if high load)"
+            "Steel"
         ],
         "considerations": [
             "Load distribution",
-            "Stability",
-            "Manufacturing method",
-            "Safety factor"
+            "Safety factor",
+            "Manufacturing method"
         ],
         "cad_steps": [
             "Sketch base geometry",
-            "Extrude main body",
-            "Add support features",
-            "Refine edges (fillets)",
-            "Final assembly check"
+            "Extrude main shape",
+            "Add supports",
+            "Refine edges",
+            "Final check"
         ]
     }
